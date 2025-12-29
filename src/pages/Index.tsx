@@ -26,6 +26,15 @@ const DashboardContent = () => {
   const ageData = getAgeData(regionFilter);
   const tableData = getTableData(10);
 
+  // Debug: log chart data
+  console.log('📊 Dashboard Data:', {
+    trendDataLength: trendData.length,
+    trendDataSample: trendData.slice(0, 2),
+    regionDataLength: regionData.length,
+    ageDataLength: ageData.length,
+    tableDataLength: tableData.length,
+  });
+
   if (loading) {
     return (
       <SidebarProvider>

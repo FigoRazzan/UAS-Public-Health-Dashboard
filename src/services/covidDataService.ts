@@ -9,18 +9,22 @@ export const covidDataService = {
      * Ambil semua data COVID global
      */
     async fetchGlobalData(): Promise<CovidGlobalReport[]> {
+        console.log('🚀 Starting fetchGlobalData with limit 10000...');
+
         const { data, error } = await supabase
             .from('covid_global_reports')
             .select('*')
+            .gte('date_reported', '2020-01-01') // Fetch from 2020 to present
             .order('date_reported', { ascending: false })
-            .limit(10000); // Fetch 10k rows for better chart data
+            .limit(200000); // Balance between data coverage and performance
 
         if (error) {
-            console.error('Error fetching global data:', error);
+            console.error('❌ Error fetching global data:', error);
             throw new Error('Gagal mengambil data global');
         }
 
         console.log(`✅ Fetched ${data?.length || 0} rows from Supabase`);
+        console.log(`📊 Sample data (full):`, JSON.stringify(data?.[0], null, 2));
         return data || [];
     },
 

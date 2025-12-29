@@ -1,5 +1,6 @@
 import { Calendar, MapPin, Activity, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 import {
   Select,
   SelectContent,
@@ -26,7 +27,7 @@ export function FilterBar() {
   // Generate years from 2020 to current year
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: currentYear - 2019 }, (_, i) => 2020 + i);
-  
+
   const months = [
     "Januari", "Februari", "Maret", "April", "Mei", "Juni",
     "Juli", "Agustus", "September", "Oktober", "November", "Desember"
@@ -52,7 +53,7 @@ export function FilterBar() {
 
   const handleDateSelect = (date: Date | undefined) => {
     if (!date) return;
-    
+
     if (isSelectingStart) {
       setTempStartDate(date);
       setIsSelectingStart(false);
@@ -63,26 +64,41 @@ export function FilterBar() {
 
   const handleApplyDates = () => {
     if (tempStartDate && tempEndDate) {
+      let startDate = tempStartDate;
+      let endDate = tempEndDate;
+
       // Ensure start date is before end date
-      if (tempStartDate > tempEndDate) {
-        setDateRange({ from: tempEndDate, to: tempStartDate });
-      } else {
-        setDateRange({ from: tempStartDate, to: tempEndDate });
+      if (startDate > endDate) {
+        [startDate, endDate] = [endDate, startDate];
       }
+
+      // Check if range exceeds 2 years (730 days)
+      const daysDiff = Math.floor((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+
+      if (daysDiff > 730) {
+        toast.error('Rentang tanggal terlalu besar', {
+          description: 'Maksimal rentang tanggal adalah 2 tahun (730 hari). Silakan pilih rentang yang lebih kecil.',
+          duration: 4000,
+        });
+        return;
+      }
+
+      setDateRange({ from: startDate, to: endDate });
       setIsOpen(false);
     }
   };
 
   const handleReset = () => {
-    // Reset to default date range (2020-01-01 to today)
-    const defaultStart = new Date(2020, 0, 1);
+    // Reset to default date range (last 2 years)
     const defaultEnd = new Date();
-    
+    const defaultStart = new Date();
+    defaultStart.setFullYear(defaultEnd.getFullYear() - 2);
+
     setTempStartDate(defaultStart);
     setTempEndDate(defaultEnd);
     setIsSelectingStart(true);
     setMonth(defaultStart);
-    
+
     // Apply the default dates immediately
     setDateRange({ from: defaultStart, to: defaultEnd });
     setIsOpen(false);
@@ -162,7 +178,7 @@ export function FilterBar() {
                 </Button>
               </div>
             </div>
-            
+
             <div className="p-3 border-b bg-muted/50">
               <div className="flex gap-2 mb-2">
                 <Button
@@ -188,16 +204,33 @@ export function FilterBar() {
             </div>
 
             <CalendarComponent
-              mode="single"
+              mode="range"
               month={month}
               onMonthChange={setMonth}
-              selected={isSelectingStart ? tempStartDate : tempEndDate}
-              onSelect={handleDateSelect}
+              selected={tempStartDate && tempEndDate ? { from: tempStartDate, to: tempEndDate } : undefined}
+              onSelect={(range) => {
+                if (!range) return;
+
+                if (isSelectingStart) {
+                  // Selecting start date
+                  if ('from' in range && range.from) {
+                    setTempStartDate(range.from);
+                    setIsSelectingStart(false); // Auto switch to end date selection
+                  }
+                } else {
+                  // Selecting end date
+                  if ('to' in range && range.to) {
+                    setTempEndDate(range.to);
+                  } else if ('from' in range && range.from) {
+                    setTempEndDate(range.from);
+                  }
+                }
+              }}
               numberOfMonths={2}
               locale={id}
               className="pointer-events-auto"
             />
-            
+
             <div className="p-3 border-t flex gap-2">
               <Button
                 variant="outline"

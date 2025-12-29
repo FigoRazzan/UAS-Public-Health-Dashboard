@@ -21,12 +21,12 @@ const FilterContext = createContext<FilterContextType | undefined>(undefined);
 
 const initialFilters: FilterState = {
   dateRange: {
-    from: new Date(2020, 0, 1),
+    from: new Date(new Date().setFullYear(new Date().getFullYear() - 2)),
     to: new Date(),
   },
   region: 'all',
   dataType: 'covid',
-  chartTimeRange: '6m',
+  chartTimeRange: '1y', // Default 1 year view
 };
 
 export function FilterProvider({ children }: { children: ReactNode }) {
