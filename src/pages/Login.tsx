@@ -3,13 +3,13 @@ import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
+import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
-import { Activity, Loader2, Moon, Sun } from 'lucide-react';
+import { Activity, Loader2, Eye, EyeOff, Moon, Sun, ArrowLeft } from 'lucide-react';
 import { useTheme } from '@/contexts/ThemeContext';
 
 const loginSchema = z.object({
@@ -26,6 +26,7 @@ const Login = () => {
     const { login } = useAuth();
     const { theme, toggleTheme } = useTheme();
     const [isLoading, setIsLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
 
     const from = (location.state as any)?.from?.pathname || '/dashboard';
 
@@ -58,8 +59,22 @@ const Login = () => {
         }
     };
 
+    // Dynamic gradient colors based on theme
+    const gradientClass = theme === 'dark'
+        ? 'bg-gradient-to-br from-slate-800 via-slate-900 to-slate-950'
+        : 'bg-gradient-to-br from-blue-800 via-blue-900 to-slate-900';
+
     return (
-        <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-primary/5 via-background to-primary/5">
+        <div className="min-h-screen flex items-center justify-center p-4 bg-muted/30 relative">
+            {/* Back Button */}
+            <Link
+                to="/"
+                className="absolute top-4 left-4 inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+            >
+                <ArrowLeft className="w-5 h-5" />
+                <span className="text-sm">Back to Home</span>
+            </Link>
+
             {/* Theme Toggle */}
             <Button
                 variant="ghost"
@@ -70,119 +85,157 @@ const Login = () => {
                 {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
             </Button>
 
-            <div className="w-full max-w-md animate-in fade-in slide-in-from-bottom-4 duration-500">
-                {/* Logo/Brand */}
-                <div className="text-center mb-8">
-                    <Link to="/" className="inline-flex items-center gap-2 text-2xl font-bold hover:opacity-80 transition-opacity">
-                        <Activity className="w-8 h-8 text-primary" />
-                        <span>Public Health Dashboard</span>
-                    </Link>
-                    <p className="text-muted-foreground mt-2">
-                        Monitoring COVID-19 Global Data
-                    </p>
-                </div>
+            {/* Main Card */}
+            <div className="w-full max-w-4xl overflow-hidden rounded-3xl shadow-2xl bg-card flex flex-col md:flex-row">
+                {/* Left Side - Gradient (slides in) */}
+                <motion.div
+                    initial={{ x: '-100%' }}
+                    animate={{ x: 0 }}
+                    transition={{ duration: 0.6, ease: 'easeOut' }}
+                    className={`w-full md:w-1/2 ${gradientClass} p-12 flex flex-col justify-center items-center text-white relative overflow-hidden`}
+                >
+                    {/* Animated Blur Orbs */}
+                    <motion.div
+                        className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl"
+                        animate={{
+                            scale: [1, 1.2, 1],
+                            x: [0, 20, 0],
+                            y: [0, 20, 0],
+                        }}
+                        transition={{
+                            duration: 8,
+                            repeat: Infinity,
+                            ease: 'easeInOut',
+                        }}
+                    />
+                    <motion.div
+                        className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl"
+                        animate={{
+                            scale: [1.2, 1, 1.2],
+                            x: [0, -20, 0],
+                            y: [0, -20, 0],
+                        }}
+                        transition={{
+                            duration: 10,
+                            repeat: Infinity,
+                            ease: 'easeInOut',
+                        }}
+                    />
 
-                <Card className="border-2">
-                    <CardHeader className="space-y-1">
-                        <CardTitle className="text-2xl font-bold">Login</CardTitle>
-                        <CardDescription>
-                            Masukkan email dan password untuk mengakses dashboard
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent>
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.5, duration: 0.5 }}
+                        className="relative z-10 text-center"
+                    >
+                        <h2 className="text-4xl font-bold mb-4">Welcome</h2>
+                        <p className="text-white/80 mb-8">
+                            Join Our Unique Platform, Explore a New Experience
+                        </p>
+                        <Link to="/register">
+                            <Button
+                                variant="outline"
+                                className="border-2 border-white text-white hover:bg-white hover:text-slate-900 rounded-full px-8 bg-transparent"
+                            >
+                                REGISTER
+                            </Button>
+                        </Link>
+                    </motion.div>
+                </motion.div>
+
+                {/* Right Side - Form */}
+                <div className="w-full md:w-1/2 p-12 bg-card">
+                    <div className="max-w-sm mx-auto">
+                        {/* Logo */}
+                        <Link to="/" className="inline-flex items-center gap-2 text-xl font-bold mb-8">
+                            <Activity className="w-7 h-7 text-primary" />
+                            <span>Health Monitor</span>
+                        </Link>
+
+                        <h1 className="text-3xl font-bold mb-2 text-primary">Sign In</h1>
+                        <p className="text-muted-foreground text-sm mb-8">Welcome back to the community</p>
+
                         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                             <div className="space-y-2">
-                                <Label htmlFor="email">Email</Label>
+                                <Label htmlFor="email" className="text-sm">Email</Label>
                                 <Input
                                     id="email"
                                     type="email"
-                                    placeholder="nama@example.com"
+                                    placeholder="Enter your email"
                                     {...register('email')}
                                     disabled={isLoading}
-                                    className={errors.email ? 'border-destructive' : ''}
+                                    className="bg-muted/50 border-muted"
                                 />
                                 {errors.email && (
-                                    <p className="text-sm text-destructive">{errors.email.message}</p>
+                                    <p className="text-xs text-destructive">{errors.email.message}</p>
                                 )}
                             </div>
 
                             <div className="space-y-2">
-                                <div className="flex items-center justify-between">
-                                    <Label htmlFor="password">Password</Label>
-                                    <Link
-                                        to="/forgot-password"
-                                        className="text-sm text-primary hover:underline"
+                                <Label htmlFor="password" className="text-sm">Password</Label>
+                                <div className="relative">
+                                    <Input
+                                        id="password"
+                                        type={showPassword ? 'text' : 'password'}
+                                        placeholder="Enter your password"
+                                        {...register('password')}
+                                        disabled={isLoading}
+                                        className="bg-muted/50 border-muted pr-10"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                                     >
-                                        Lupa password?
-                                    </Link>
+                                        {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                                    </button>
                                 </div>
-                                <Input
-                                    id="password"
-                                    type="password"
-                                    placeholder="••••••••"
-                                    {...register('password')}
-                                    disabled={isLoading}
-                                    className={errors.password ? 'border-destructive' : ''}
-                                />
                                 {errors.password && (
-                                    <p className="text-sm text-destructive">{errors.password.message}</p>
+                                    <p className="text-xs text-destructive">{errors.password.message}</p>
                                 )}
                             </div>
 
-                            <div className="flex items-center space-x-2">
-                                <Checkbox
-                                    id="rememberMe"
-                                    checked={rememberMe}
-                                    onCheckedChange={(checked) => setValue('rememberMe', checked as boolean)}
-                                    disabled={isLoading}
-                                />
-                                <Label
-                                    htmlFor="rememberMe"
-                                    className="text-sm font-normal cursor-pointer"
-                                >
-                                    Ingat saya
-                                </Label>
+                            <div className="flex items-center justify-between text-sm">
+                                <div className="flex items-center space-x-2">
+                                    <Checkbox
+                                        id="rememberMe"
+                                        checked={rememberMe}
+                                        onCheckedChange={(checked) => setValue('rememberMe', checked as boolean)}
+                                        disabled={isLoading}
+                                    />
+                                    <Label htmlFor="rememberMe" className="text-xs cursor-pointer font-normal">
+                                        Remember me
+                                    </Label>
+                                </div>
+                                <Link to="/forgot-password" className="text-xs text-primary hover:underline">
+                                    Forgot password?
+                                </Link>
                             </div>
 
                             <Button
                                 type="submit"
-                                className="w-full"
+                                className="w-full rounded-full h-11"
                                 disabled={isLoading}
                             >
                                 {isLoading ? (
                                     <>
                                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                        Memproses...
+                                        Loading...
                                     </>
                                 ) : (
-                                    'Login'
+                                    'LOGIN'
                                 )}
                             </Button>
-                        </form>
-                    </CardContent>
-                    <CardFooter className="flex flex-col space-y-4">
-                        <div className="text-sm text-center text-muted-foreground">
-                            Belum punya akun?{' '}
-                            <Link to="/register" className="text-primary hover:underline font-medium">
-                                Daftar sekarang
-                            </Link>
-                        </div>
-                        <div className="text-sm text-center text-muted-foreground">
-                            <Link to="/" className="hover:underline">
-                                ← Kembali ke halaman utama
-                            </Link>
-                        </div>
-                    </CardFooter>
-                </Card>
 
-                {/* Demo Credentials Info */}
-                <Card className="mt-4 border-primary/20 bg-primary/5">
-                    <CardContent className="pt-6">
-                        <p className="text-sm text-muted-foreground text-center">
-                            <span className="font-semibold text-foreground">Demo:</span> Daftar akun baru atau gunakan akun yang sudah terdaftar
-                        </p>
-                    </CardContent>
-                </Card>
+                            <div className="text-center text-xs text-muted-foreground">
+                                Don't have an account?{' '}
+                                <Link to="/register" className="text-primary font-semibold hover:underline">
+                                    Sign up
+                                </Link>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
     );
