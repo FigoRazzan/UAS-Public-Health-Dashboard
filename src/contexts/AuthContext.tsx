@@ -1,168 +1,184 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { User, AuthContextType } from '@/types/auth.types';
+import { User as SupabaseUser } from '@supabase/supabase-js';
+import { supabase } from '@/lib/supabase';
+import { Profile } from '@/types/database.types';
 import { toast } from 'sonner';
+
+interface User {
+    id: string;
+    email: string;
+    name: string;
+    role?: 'admin' | 'public';
+    agency?: string | null;
+}
+
+interface AuthContextType {
+    user: User | null;
+    isLoading: boolean;
+    login: (email: string, password: string, rememberMe?: boolean) => Promise<void>;
+    register: (name: string, email: string, password: string) => Promise<void>;
+    logout: () => Promise<void>;
+}
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const AUTH_STORAGE_KEY = 'auth_user';
-const REMEMBER_ME_KEY = 'auth_remember_me';
+export const useAuth = () => {
+    const context = useContext(AuthContext);
+    if (!context) {
+        throw new Error('useAuth must be used within an AuthProvider');
+    }
+    return context;
+};
 
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
+interface AuthProviderProps {
+    children: ReactNode;
+}
+
+export const AuthProvider = ({ children }: AuthProviderProps) => {
     const [user, setUser] = useState<User | null>(null);
-    const [loading, setLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(true);
 
-    // Load user from localStorage on mount
+    // Check session on mount
     useEffect(() => {
-        const loadUser = () => {
-            try {
-                const rememberMe = localStorage.getItem(REMEMBER_ME_KEY) === 'true';
-                const storedUser = rememberMe
-                    ? localStorage.getItem(AUTH_STORAGE_KEY)
-                    : sessionStorage.getItem(AUTH_STORAGE_KEY);
+        checkUser();
 
-                if (storedUser) {
-                    setUser(JSON.parse(storedUser));
-                }
-            } catch (error) {
-                console.error('Error loading user:', error);
-            } finally {
-                setLoading(false);
+        // Listen for auth changes
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+            if (event === 'SIGNED_IN' && session) {
+                await loadUserProfile(session.user);
+            } else if (event === 'SIGNED_OUT') {
+                setUser(null);
             }
-        };
+        });
 
-        loadUser();
+        return () => {
+            subscription.unsubscribe();
+        };
     }, []);
 
-    const login = async (email: string, password: string, rememberMe = false) => {
+    const checkUser = async () => {
         try {
-            setLoading(true);
-
-            // Simulate API call delay
-            await new Promise(resolve => setTimeout(resolve, 500));
-
-            // In a real app, this would be an API call
-            // For now, we'll check if user exists in localStorage (from registration)
-            const users = JSON.parse(localStorage.getItem('registered_users') || '[]');
-            const foundUser = users.find((u: User & { password: string }) =>
-                u.email === email && u.password === password
-            );
-
-            if (!foundUser) {
-                throw new Error('Email atau password salah');
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session?.user) {
+                await loadUserProfile(session.user);
             }
-
-            const userData: User = {
-                id: foundUser.id,
-                name: foundUser.name,
-                email: foundUser.email,
-                createdAt: foundUser.createdAt,
-            };
-
-            setUser(userData);
-
-            // Store user data
-            const userJson = JSON.stringify(userData);
-            if (rememberMe) {
-                localStorage.setItem(AUTH_STORAGE_KEY, userJson);
-                localStorage.setItem(REMEMBER_ME_KEY, 'true');
-            } else {
-                sessionStorage.setItem(AUTH_STORAGE_KEY, userJson);
-                localStorage.setItem(REMEMBER_ME_KEY, 'false');
-            }
-
-            toast.success('Login berhasil!', {
-                description: `Selamat datang kembali, ${userData.name}!`,
-            });
         } catch (error) {
-            const message = error instanceof Error ? error.message : 'Login gagal';
-            toast.error('Login Gagal', {
-                description: message,
-            });
-            throw error;
+            console.error('Error checking user:', error);
         } finally {
-            setLoading(false);
+            setIsLoading(false);
+        }
+    };
+
+    const loadUserProfile = async (supabaseUser: SupabaseUser) => {
+        try {
+            const { data: profile, error } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', supabaseUser.id)
+                .single<Profile>();
+
+            if (error) throw error;
+
+            if (profile) {
+                setUser({
+                    id: supabaseUser.id,
+                    email: supabaseUser.email || '',
+                    name: profile.full_name || supabaseUser.email || 'User',
+                    role: profile.role as 'admin' | 'public',
+                    agency: profile.agency,
+                });
+            } else {
+                // No profile found, use basic user info
+                setUser({
+                    id: supabaseUser.id,
+                    email: supabaseUser.email || '',
+                    name: supabaseUser.email || 'User',
+                    role: 'public',
+                });
+            }
+        } catch (error) {
+            console.error('Error loading profile:', error);
+            // Fallback to basic user info
+            setUser({
+                id: supabaseUser.id,
+                email: supabaseUser.email || '',
+                name: supabaseUser.email || 'User',
+                role: 'public',
+            });
+        }
+    };
+
+    const login = async (email: string, password: string, rememberMe?: boolean) => {
+        try {
+            const { data, error } = await supabase.auth.signInWithPassword({
+                email,
+                password,
+            });
+
+            if (error) throw error;
+
+            if (data.user) {
+                await loadUserProfile(data.user);
+                toast.success('Login berhasil!');
+            }
+        } catch (error: any) {
+            console.error('Login error:', error);
+            toast.error(error.message || 'Login gagal. Periksa email dan password Anda.');
+            throw error;
         }
     };
 
     const register = async (name: string, email: string, password: string) => {
         try {
-            setLoading(true);
-
-            // Simulate API call delay
-            await new Promise(resolve => setTimeout(resolve, 500));
-
-            // Check if user already exists
-            const users = JSON.parse(localStorage.getItem('registered_users') || '[]');
-            const existingUser = users.find((u: User & { password: string }) => u.email === email);
-
-            if (existingUser) {
-                throw new Error('Email sudah terdaftar');
-            }
-
-            // Create new user
-            const newUser: User & { password: string } = {
-                id: crypto.randomUUID(),
-                name,
+            // Sign up user
+            const { data, error } = await supabase.auth.signUp({
                 email,
-                password, // In real app, this would be hashed on backend
-                createdAt: new Date().toISOString(),
-            };
-
-            // Save to "database" (localStorage)
-            users.push(newUser);
-            localStorage.setItem('registered_users', JSON.stringify(users));
-
-            // Auto-login after registration
-            const userData: User = {
-                id: newUser.id,
-                name: newUser.name,
-                email: newUser.email,
-                createdAt: newUser.createdAt,
-            };
-
-            setUser(userData);
-            sessionStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(userData));
-
-            toast.success('Registrasi berhasil!', {
-                description: `Selamat datang, ${userData.name}!`,
+                password,
+                options: {
+                    data: {
+                        full_name: name,
+                    },
+                },
             });
-        } catch (error) {
-            const message = error instanceof Error ? error.message : 'Registrasi gagal';
-            toast.error('Registrasi Gagal', {
-                description: message,
-            });
+
+            if (error) throw error;
+
+            if (data.user) {
+                // Profile will be created automatically by trigger
+                // Wait a bit for trigger to complete
+                await new Promise(resolve => setTimeout(resolve, 1000));
+
+                await loadUserProfile(data.user);
+                toast.success('Registrasi berhasil! Selamat datang!');
+            }
+        } catch (error: any) {
+            console.error('Register error:', error);
+            toast.error(error.message || 'Registrasi gagal. Coba lagi.');
             throw error;
-        } finally {
-            setLoading(false);
         }
     };
 
-    const logout = () => {
-        setUser(null);
-        localStorage.removeItem(AUTH_STORAGE_KEY);
-        sessionStorage.removeItem(AUTH_STORAGE_KEY);
-        localStorage.removeItem(REMEMBER_ME_KEY);
-        toast.info('Logout berhasil', {
-            description: 'Sampai jumpa lagi!',
-        });
+    const logout = async () => {
+        try {
+            const { error } = await supabase.auth.signOut();
+            if (error) throw error;
+
+            setUser(null);
+            toast.success('Logout berhasil!');
+        } catch (error: any) {
+            console.error('Logout error:', error);
+            toast.error('Logout gagal. Coba lagi.');
+            throw error;
+        }
     };
 
-    const value: AuthContextType = {
+    const value = {
         user,
-        isAuthenticated: !!user,
+        isLoading,
         login,
         register,
         logout,
-        loading,
     };
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-};
-
-export const useAuth = () => {
-    const context = useContext(AuthContext);
-    if (context === undefined) {
-        throw new Error('useAuth must be used within an AuthProvider');
-    }
-    return context;
 };

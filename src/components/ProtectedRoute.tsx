@@ -1,29 +1,32 @@
+import { ReactNode } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { Loader2 } from 'lucide-react';
 
 interface ProtectedRouteProps {
-    children: React.ReactNode;
+    children: ReactNode;
 }
 
-export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
-    const { isAuthenticated, loading } = useAuth();
+const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
+    const { user, isLoading } = useAuth();
     const location = useLocation();
 
-    if (loading) {
+    if (isLoading) {
         return (
-            <div className="flex items-center justify-center min-h-screen">
-                <div className="text-center space-y-4">
-                    <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent mx-auto"></div>
+            <div className="min-h-screen flex items-center justify-center bg-background">
+                <div className="text-center">
+                    <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-primary" />
                     <p className="text-muted-foreground">Memuat...</p>
                 </div>
             </div>
         );
     }
 
-    if (!isAuthenticated) {
-        // Redirect to login page but save the attempted location
+    if (!user) {
         return <Navigate to="/login" state={{ from: location }} replace />;
     }
 
     return <>{children}</>;
 };
+
+export default ProtectedRoute;
