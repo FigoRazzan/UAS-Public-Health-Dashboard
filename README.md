@@ -5,10 +5,11 @@
 ![Dashboard Preview](https://img.shields.io/badge/Status-Active-success)
 ![React](https://img.shields.io/badge/React-18.3.1-blue)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.5.3-blue)
+![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL-green)
 
-**Real-time COVID-19 Global Data Monitoring & Analytics Platform**
+**Real-time COVID-19 Global Data Monitoring & Analytics Platform with RBAC**
 
-[Report Bug](https://github.com/FigoRazzan/Public-Health-Dashboard/issues) • [Request Feature](https://github.com/FigoRazzan/Public-Health-Dashboard/issues)
+[Report Bug](https://github.com/FigoRazzan/UAS-Public-Health-Dashboard/issues) • [Request Feature](https://github.com/FigoRazzan/UAS-Public-Health-Dashboard/issues)
 
 </div>
 
@@ -22,23 +23,35 @@ Proyek ini dikembangkan sebagai bagian dari mata kuliah **FB-499 INFORMATIKA TER
 
 ### 🎯 Fitur Utama
 
-- **📊 Visualisasi Data Interaktif**
+- **� Authentication & Authorization**
+  - Sistem login/register dengan Supabase Auth
+  - Role-Based Access Control (RBAC): Admin & Public User
+  - Protected routes dengan middleware
+  - Session management & auto-refresh
+
+- **👨‍💼 Admin Panel**
+  - CSV upload untuk update data COVID-19
+  - Audit logs untuk tracking aktivitas admin
+  - User management & role assignment
+  - Data source management
+
+- **�📊 Visualisasi Data Interaktif**
   - Tren kasus harian per wilayah dengan line chart
   - Distribusi kasus per wilayah WHO dengan pie chart
   - Analisis demografis berdasarkan kelompok usia dengan bar chart
   - Tabel detail data negara dengan sorting & pagination
 
 - **🔍 Sistem Filter Canggih**
-  - Filter rentang tanggal dengan date picker interaktif
+  - Filter rentang tanggal dengan date picker interaktif (max 2 tahun)
   - Filter berdasarkan 6 wilayah WHO (Afrika, Amerika, Eropa, dll)
   - Time range selector (1 bulan, 3 bulan, 6 bulan, 1 tahun, semua)
   - Multi-mode visualization (per wilayah atau agregat)
 
 - **⚡ Performa Optimal**
-  - IndexedDB caching untuk loading instant
-  - Load pertama ~10 detik, berikutnya < 1 detik
-  - Memoization untuk optimasi re-rendering
+  - Supabase PostgreSQL untuk data storage
+  - Server-side filtering & aggregation
   - Responsive design untuk semua device
+  - Framer Motion untuk smooth animations
 
 - **📈 KPI Dashboard**
   - Total kasus terkonfirmasi
@@ -62,7 +75,7 @@ Proyek ini dikembangkan oleh mahasiswa Informatika ITENAS:
 <tr>
 <td>15-2022-044</td>
 <td>Dimas Bratakusumah</td>
-<td>Project Lead / Health Informatics Analyst & Ethics & Governance Representative</td>
+<td>Project Lead / Health Informatics Analyst</td>
 </tr>
 <tr>
 <td>15-2022-064</td>
@@ -97,10 +110,10 @@ Dashboard menggunakan dataset resmi dari:
 
 - **Dataset:** WHO COVID-19 Global Daily Data
 - **Sumber:** World Health Organization (WHO)
-- **Format:** CSV (21.84 MB)
-- **Jumlah Records:** 502,802+ rows
-- **Periode:** 1 Januari 2020 - Present
-- **Update:** Real-time data dari WHO
+- **Storage:** Supabase PostgreSQL Database
+- **Jumlah Records:** 500,000+ rows
+- **Periode:** 1 Januari 2020 - 31 Desember 2024
+- **Update:** Admin dapat upload CSV untuk update data
 
 **Data Coverage:**
 - 6 Wilayah WHO (AFR, AMR, EMR, EUR, SEAR, WPR)
@@ -109,6 +122,12 @@ Dashboard menggunakan dataset resmi dari:
 - Metadata: kode negara, tanggal pelaporan
 
 ## 🛠️ Teknologi yang Digunakan
+
+### Backend & Database
+- **Supabase** - Backend as a Service (BaaS)
+- **PostgreSQL** - Relational database
+- **Row Level Security (RLS)** - Database security
+- **Supabase Auth** - Authentication system
 
 ### Frontend Framework & Library
 - **React 18.3.1** - UI library
@@ -121,6 +140,7 @@ Dashboard menggunakan dataset resmi dari:
 - **Tailwind CSS 3.4.1** - Utility-first CSS
 - **Radix UI** - Accessible component primitives
 - **Lucide React** - Icon library
+- **Framer Motion** - Animation library
 
 ### Data Visualization
 - **Recharts 2.14.1** - Chart library untuk visualisasi
@@ -129,7 +149,6 @@ Dashboard menggunakan dataset resmi dari:
 ### Data Processing
 - **Papaparse 5.4.1** - CSV parsing
 - **Date-fns 4.1.0** - Date manipulation
-- **IndexedDB API** - Browser-side data caching
 
 ### State Management
 - **React Context API** - Global state management
@@ -147,28 +166,42 @@ Dashboard menggunakan dataset resmi dari:
 - **Node.js** >= 18.0.0
 - **npm** atau **bun** package manager
 - **Git**
+- **Supabase Account** (untuk database)
 
 ### Langkah Instalasi
 
 ```bash
 # 1. Clone repository
-git clone https://github.com/FigoRazzan/Public-Health-Dashboard.git
+git clone https://github.com/FigoRazzan/UAS-Public-Health-Dashboard.git
 
 # 2. Masuk ke direktori proyek
-cd Public-Health-Dashboard
+cd UAS-Public-Health-Dashboard
 
 # 3. Install dependencies
 npm install
 # atau dengan bun
 bun install
 
-# 4. Jalankan development server
+# 4. Setup environment variables
+# Buat file .env dan isi dengan:
+# VITE_SUPABASE_URL=your_supabase_url
+# VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+
+# 5. Jalankan development server
 npm run dev
 # atau dengan bun
 bun dev
 
-# 5. Buka browser di http://localhost:8080
+# 6. Buka browser di http://localhost:8080
 ```
+
+### Setup Supabase Database
+
+1. **Create Supabase Project**
+2. **Run SQL Migration** (lihat `backend/schema.sql`)
+3. **Enable Row Level Security (RLS)**
+4. **Setup Auth Policies**
+5. **Upload initial CSV data via Admin Panel**
 
 ### Build untuk Production
 
@@ -182,26 +215,25 @@ npm run preview
 
 ## 📱 Cara Menggunakan
 
-### 1. **Filter Data**
-   - Pilih rentang tanggal dengan date picker
+### 1. **Authentication**
+   - Register akun baru atau login
+   - Default role: Public User
+   - Admin dapat assign role via database
+
+### 2. **Filter Data**
+   - Pilih rentang tanggal (max 2 tahun)
    - Pilih wilayah WHO (atau "Semua Wilayah")
    - Klik tombol Reset untuk kembali ke default
 
-### 2. **Analisis Tren**
+### 3. **Analisis Tren**
    - Gunakan time range selector (1m, 3m, 6m, 1y, all)
    - Hover pada chart untuk detail data
    - Chart akan update otomatis sesuai filter
 
-### 3. **Eksplorasi Data**
-   - Mode "Semua Wilayah": Tampilkan breakdown per wilayah
-   - Mode wilayah spesifik: Tampilkan data kasus & kematian
-   - Gunakan tabel untuk melihat data per negara
-
-### 4. **Optimasi Loading**
-   - Load pertama butuh ~10 detik (download CSV 21MB)
-   - Setelah itu, data di-cache di browser
-   - Refresh page akan instant (< 1 detik)
-   - Cache berlaku 24 jam
+### 4. **Admin Features** (Admin only)
+   - Upload CSV untuk update data
+   - View audit logs
+   - Manage data sources
 
 ## 🎨 Fitur Visualisasi
 
@@ -232,32 +264,46 @@ npm run preview
 ## 🔧 Struktur Proyek
 
 ```
-Public-Health-Dashboard/
+UAS-Public-Health-Dashboard/
 ├── public/
-│   ├── WHO-COVID-19-global-daily-data.csv  # Dataset WHO
+│   ├── Foto/                        # Team profile photos
 │   └── robots.txt
 ├── src/
-│   ├── components/              # React components
-│   │   ├── ui/                  # Shadcn UI components
-│   │   ├── AgeChart.tsx         # Bar chart kelompok usia
-│   │   ├── DataTable.tsx        # Tabel data negara
-│   │   ├── DistributionChart.tsx # Pie chart distribusi
-│   │   ├── FilterBar.tsx        # Komponen filter
-│   │   ├── KPICard.tsx          # KPI metrics card
-│   │   └── TrendChart.tsx       # Line chart tren
+│   ├── components/                  # React components
+│   │   ├── ui/                      # Shadcn UI components
+│   │   ├── AdminPanel.tsx           # Admin CSV upload
+│   │   ├── AgeChart.tsx             # Bar chart kelompok usia
+│   │   ├── DataTable.tsx            # Tabel data negara
+│   │   ├── DashboardHeader.tsx      # Header with user menu
+│   │   ├── DistributionChart.tsx    # Pie chart distribusi
+│   │   ├── FilterBar.tsx            # Komponen filter
+│   │   ├── KPICard.tsx              # KPI metrics card
+│   │   ├── TeamMemberCard.tsx       # Team member card
+│   │   └── TrendChart.tsx           # Line chart tren
 │   ├── contexts/
-│   │   └── FilterContext.tsx    # Global filter state
+│   │   ├── AuthContext.tsx          # Authentication state
+│   │   ├── FilterContext.tsx        # Global filter state
+│   │   └── ThemeContext.tsx         # Theme (dark/light)
 │   ├── hooks/
-│   │   └── useCovidData.ts      # Data fetching & processing
+│   │   └── useCovidDataSupabase.ts  # Supabase data fetching
 │   ├── lib/
-│   │   ├── indexedDB.ts         # Browser caching
-│   │   └── utils.ts             # Helper functions
+│   │   └── utils.ts                 # Helper functions
 │   ├── pages/
-│   │   ├── Index.tsx            # Dashboard utama
-│   │   ├── DataExplorer.tsx     # Data exploration page
-│   │   └── Laporan.tsx          # Report page
-│   ├── App.tsx                  # Root component
-│   └── main.tsx                 # Entry point
+│   │   ├── Index.tsx                # Dashboard utama
+│   │   ├── Landing.tsx              # Landing page
+│   │   ├── Login.tsx                # Login page
+│   │   ├── Register.tsx             # Register page
+│   │   ├── AuditLogs.tsx            # Admin audit logs
+│   │   ├── DataExplorer.tsx         # Data exploration
+│   │   ├── Pengaturan.tsx           # Settings page
+│   │   └── SumberData.tsx           # Data source info
+│   ├── services/
+│   │   ├── adminService.ts          # Admin operations
+│   │   └── covidDataService.ts      # COVID data operations
+│   ├── App.tsx                      # Root component
+│   └── main.tsx                     # Entry point
+├── backend/
+│   └── schema.sql                   # Supabase database schema
 ├── package.json
 ├── tsconfig.json
 ├── vite.config.ts
@@ -266,19 +312,35 @@ Public-Health-Dashboard/
 
 ## 🌟 Highlight Teknis
 
-### 1. **Smart Caching dengan IndexedDB**
+### 1. **Role-Based Access Control (RBAC)**
 ```typescript
-// Load pertama: Fetch & parse CSV
-// Load berikutnya: Ambil dari IndexedDB (instant!)
-const cached = await getCachedData();
-if (cached) {
-  console.log('Loaded from cache (INSTANT)');
-  setData(cached.data);
-  return;
-}
+// Row Level Security di Supabase
+CREATE POLICY "Public users can read data"
+ON covid_data FOR SELECT
+TO authenticated
+USING (true);
+
+CREATE POLICY "Only admins can insert data"
+ON covid_data FOR INSERT
+TO authenticated
+USING (is_admin());
 ```
 
-### 2. **Performance Optimization**
+### 2. **Authentication Flow**
+```typescript
+// Login dengan Supabase Auth
+const { data, error } = await supabase.auth.signInWithPassword({
+  email,
+  password
+});
+
+// Auto-refresh session
+supabase.auth.onAuthStateChange((event, session) => {
+  if (event === 'SIGNED_IN') setUser(session?.user);
+});
+```
+
+### 3. **Performance Optimization**
 ```typescript
 // Memoization untuk avoid re-calculation
 const filteredData = useMemo(() => {
@@ -286,7 +348,7 @@ const filteredData = useMemo(() => {
 }, [data, filters]);
 ```
 
-### 3. **Dynamic Visualization**
+### 4. **Dynamic Visualization**
 ```typescript
 // Chart berubah berdasarkan filter
 {showMultiRegion ? (
@@ -296,27 +358,14 @@ const filteredData = useMemo(() => {
 )}
 ```
 
-## 🖼️ Screenshots & Demo
+## � Security Features
 
-### Dashboard Utama
-![Dashboard Overview](public/Screenshots/DashboardUtama.png)
-*Dashboard dengan KPI cards, trend chart, dan real-time statistics*
-
-### Tren Kasus Harian (Interactive)
-![Trend Chart Animation](public/Screenshots/LineChart.gif)
-*Visualisasi interaktif tren kasus harian per wilayah dengan multi-region comparison*
-
-### Data Explorer
-![Data Explorer](public/Screenshots/DataExplorer.png)
-*Eksplorasi data dengan filtering, sorting, dan pagination*
-
-### Visualisasi Interaktif
-![Interactive Charts](public/Screenshots/Chart.png)
-*Multi-region visualization dengan pie chart dan bar chart*
-
-### Light Mode
-![Light Mode](public/Screenshots/LightMode.png)
-*Tema terang dengan tampilan yang bersih dan modern*
+- **Row Level Security (RLS)** - Database-level access control
+- **JWT Authentication** - Secure token-based auth
+- **Protected Routes** - Client-side route protection
+- **Audit Logging** - Track all admin actions
+- **SQL Injection Prevention** - Parameterized queries
+- **XSS Protection** - Input sanitization
 
 ## 🤝 Kontribusi
 
@@ -330,7 +379,7 @@ Kontribusi sangat diterima! Untuk kontribusi major:
 
 ## 📞 Kontak
 
-**Repository:** [github.com/FigoRazzan/Public-Health-Dashboard](https://github.com/FigoRazzan/Public-Health-Dashboard)
+**Repository:** [github.com/FigoRazzan/UAS-Public-Health-Dashboard](https://github.com/FigoRazzan/UAS-Public-Health-Dashboard)
 
 **Institusi:** Institut Teknologi Nasional (ITENAS) Bandung
 
