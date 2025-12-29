@@ -8,20 +8,20 @@ import { AgeChart } from "@/components/AgeChart";
 import { DataTable } from "@/components/DataTable";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Activity, Users, Heart, TrendingUp } from "lucide-react";
-import { useCovidData } from "@/hooks/useCovidData";
+import { useCovidDataSupabase as useCovidData } from "@/hooks/useCovidDataSupabase";
 import { FilterProvider, useFilters } from "@/contexts/FilterContext";
 
 const DashboardContent = () => {
   const { filters } = useFilters();
   const { loading, error, stats, getTrendData, getRegionData, getAgeData, getTableData } = useCovidData(filters);
-  
+
   const trendData = getTrendData(filters.chartTimeRange);
-  
+
   // Use main region filter for both charts
-  const regionFilter = filters.region === 'all' 
-    ? ['AFR', 'AMR', 'EMR', 'EUR', 'SEAR', 'WPR'] 
+  const regionFilter = filters.region === 'all'
+    ? ['AFR', 'AMR', 'EMR', 'EUR', 'SEAR', 'WPR']
     : [filters.region];
-  
+
   const regionData = getRegionData(regionFilter);
   const ageData = getAgeData(regionFilter);
   const tableData = getTableData(10);
@@ -193,9 +193,9 @@ const DashboardContent = () => {
               <KPICard
                 title="Total Kasus Terkonfirmasi"
                 value={stats.totalCases.toLocaleString('id-ID')}
-                trend={{ 
-                  direction: stats.casesTrend >= 0 ? "up" : "down", 
-                  value: `${stats.casesTrend >= 0 ? '+' : ''}${stats.casesTrend.toFixed(1)}%` 
+                trend={{
+                  direction: stats.casesTrend >= 0 ? "up" : "down",
+                  value: `${stats.casesTrend >= 0 ? '+' : ''}${stats.casesTrend.toFixed(1)}%`
                 }}
                 icon={Activity}
                 variant="primary"
@@ -203,9 +203,9 @@ const DashboardContent = () => {
               <KPICard
                 title="Total Kematian"
                 value={stats.totalDeaths.toLocaleString('id-ID')}
-                trend={{ 
-                  direction: stats.deathsTrend >= 0 ? "up" : "down", 
-                  value: `${stats.deathsTrend >= 0 ? '+' : ''}${stats.deathsTrend.toFixed(1)}%` 
+                trend={{
+                  direction: stats.deathsTrend >= 0 ? "up" : "down",
+                  value: `${stats.deathsTrend >= 0 ? '+' : ''}${stats.deathsTrend.toFixed(1)}%`
                 }}
                 icon={Users}
                 variant="danger"

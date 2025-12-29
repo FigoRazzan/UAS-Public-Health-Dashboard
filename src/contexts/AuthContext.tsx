@@ -16,7 +16,7 @@ interface AuthContextType {
     user: User | null;
     isLoading: boolean;
     login: (email: string, password: string, rememberMe?: boolean) => Promise<void>;
-    register: (name: string, email: string, password: string) => Promise<void>;
+    register: (name: string, username: string, email: string, password: string) => Promise<void>;
     logout: () => Promise<void>;
 }
 
@@ -108,8 +108,28 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         }
     };
 
-    const login = async (email: string, password: string, rememberMe?: boolean) => {
+    const login = async (emailOrUsername: string, password: string, rememberMe?: boolean) => {
         try {
+            let email = emailOrUsername;
+
+            // Detect if input is username (no @ symbol) or email
+            if (!emailOrUsername.includes('@')) {
+                // Input is username, get email from profiles table
+                const { data: profile, error: profileError } = await supabase
+                    .from('profiles')
+                    .select('email')
+                    .eq('username', emailOrUsername)
+                    .single<{ email: string }>();
+
+                if (profileError || !profile || !profile.email) {
+                    toast.error('Username tidak ditemukan');
+                    throw new Error('Username not found');
+                }
+
+                email = profile.email;
+            }
+
+            // Now login with email
             const { data, error } = await supabase.auth.signInWithPassword({
                 email,
                 password,
@@ -123,12 +143,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             }
         } catch (error: any) {
             console.error('Login error:', error);
-            toast.error(error.message || 'Login gagal. Periksa email dan password Anda.');
+            if (!error.message.includes('Username')) {
+                toast.error(error.message || 'Login gagal. Periksa email/username dan password Anda.');
+            }
             throw error;
         }
     };
 
-    const register = async (name: string, email: string, password: string) => {
+    const register = async (name: string, username: string, email: string, password: string) => {
         try {
             // Sign up user
             const { data, error } = await supabase.auth.signUp({
@@ -137,6 +159,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
                 options: {
                     data: {
                         full_name: name,
+                        username: username,
                     },
                 },
             });

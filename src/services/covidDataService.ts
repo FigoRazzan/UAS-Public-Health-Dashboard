@@ -12,13 +12,15 @@ export const covidDataService = {
         const { data, error } = await supabase
             .from('covid_global_reports')
             .select('*')
-            .order('date_reported', { ascending: false });
+            .order('date_reported', { ascending: false })
+            .limit(10000); // Fetch 10k rows for better chart data
 
         if (error) {
             console.error('Error fetching global data:', error);
             throw new Error('Gagal mengambil data global');
         }
 
+        console.log(`✅ Fetched ${data?.length || 0} rows from Supabase`);
         return data || [];
     },
 

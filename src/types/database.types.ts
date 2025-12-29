@@ -14,6 +14,8 @@ export interface CovidGlobalReport {
 export interface Profile {
     id: string;
     full_name: string | null;
+    username: string | null;
+    email: string | null;
     role: 'admin' | 'public';
     agency: string | null;
     created_at: string;

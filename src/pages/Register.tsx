@@ -14,6 +14,10 @@ import { useTheme } from '@/contexts/ThemeContext';
 
 const registerSchema = z.object({
     name: z.string().min(3, 'Nama minimal 3 karakter'),
+    username: z.string()
+        .min(3, 'Username minimal 3 karakter')
+        .max(20, 'Username maksimal 20 karakter')
+        .regex(/^[a-z0-9_]+$/, 'Username hanya boleh huruf kecil, angka, dan underscore'),
     email: z.string().email('Email tidak valid'),
     password: z.string()
         .min(8, 'Password minimal 8 karakter')
@@ -49,6 +53,7 @@ const Register = () => {
         resolver: zodResolver(registerSchema),
         defaultValues: {
             name: '',
+            username: '',
             email: '',
             password: '',
             confirmPassword: '',
@@ -73,7 +78,7 @@ const Register = () => {
     const onSubmit = async (data: RegisterFormData) => {
         try {
             setIsLoading(true);
-            await registerUser(data.name, data.email, data.password);
+            await registerUser(data.name, data.username, data.email, data.password);
             navigate('/dashboard', { replace: true });
         } catch (error) {
             // Error is handled in AuthContext with toast
@@ -195,6 +200,21 @@ const Register = () => {
                             </div>
 
                             <div className="space-y-2">
+                                <Label htmlFor="username" className="text-sm">Username</Label>
+                                <Input
+                                    id="username"
+                                    type="text"
+                                    placeholder="Choose a username"
+                                    {...register('username')}
+                                    disabled={isLoading}
+                                    className="bg-muted/50 border-muted"
+                                />
+                                {errors.username && (
+                                    <p className="text-xs text-destructive">{errors.username.message}</p>
+                                )}
+                            </div>
+
+                            <div className="space-y-2">
                                 <Label htmlFor="email" className="text-sm">Email</Label>
                                 <Input
                                     id="email"
@@ -243,14 +263,14 @@ const Register = () => {
                                                     <div
                                                         key={level}
                                                         className={`h-1 flex-1 rounded-full transition-all ${passwordStrength >= level
-                                                                ? strengthPercentage === 100
-                                                                    ? 'bg-success'
-                                                                    : strengthPercentage >= 75
-                                                                        ? 'bg-primary'
-                                                                        : strengthPercentage >= 50
-                                                                            ? 'bg-warning'
-                                                                            : 'bg-destructive'
-                                                                : 'bg-muted'
+                                                            ? strengthPercentage === 100
+                                                                ? 'bg-success'
+                                                                : strengthPercentage >= 75
+                                                                    ? 'bg-primary'
+                                                                    : strengthPercentage >= 50
+                                                                        ? 'bg-warning'
+                                                                        : 'bg-destructive'
+                                                            : 'bg-muted'
                                                             }`}
                                                     />
                                                 ))}

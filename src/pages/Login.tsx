@@ -13,7 +13,7 @@ import { Activity, Loader2, Eye, EyeOff, Moon, Sun, ArrowLeft } from 'lucide-rea
 import { useTheme } from '@/contexts/ThemeContext';
 
 const loginSchema = z.object({
-    email: z.string().email('Email tidak valid'),
+    emailOrUsername: z.string().min(1, 'Email atau username harus diisi'),
     password: z.string().min(8, 'Password minimal 8 karakter'),
     rememberMe: z.boolean().optional(),
 });
@@ -39,7 +39,7 @@ const Login = () => {
     } = useForm<LoginFormData>({
         resolver: zodResolver(loginSchema),
         defaultValues: {
-            email: '',
+            emailOrUsername: '',
             password: '',
             rememberMe: false,
         },
@@ -50,7 +50,7 @@ const Login = () => {
     const onSubmit = async (data: LoginFormData) => {
         try {
             setIsLoading(true);
-            await login(data.email, data.password, data.rememberMe);
+            await login(data.emailOrUsername, data.password, data.rememberMe);
             navigate(from, { replace: true });
         } catch (error) {
             // Error is handled in AuthContext with toast
@@ -157,17 +157,17 @@ const Login = () => {
 
                         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                             <div className="space-y-2">
-                                <Label htmlFor="email" className="text-sm">Email</Label>
+                                <Label htmlFor="emailOrUsername" className="text-sm">Email atau Username</Label>
                                 <Input
-                                    id="email"
-                                    type="email"
-                                    placeholder="Enter your email"
-                                    {...register('email')}
+                                    id="emailOrUsername"
+                                    type="text"
+                                    placeholder="Enter email or username"
+                                    {...register('emailOrUsername')}
                                     disabled={isLoading}
                                     className="bg-muted/50 border-muted"
                                 />
-                                {errors.email && (
-                                    <p className="text-xs text-destructive">{errors.email.message}</p>
+                                {errors.emailOrUsername && (
+                                    <p className="text-xs text-destructive">{errors.emailOrUsername.message}</p>
                                 )}
                             </div>
 

@@ -89,16 +89,16 @@ export function DataTable({ data: tableData }: DataTableProps) {
                     <Badge variant="outline">{row.who_region}</Badge>
                   </TableCell>
                   <TableCell className="text-right font-mono">
-                    {row.new_cases.toLocaleString()}
+                    {(row.new_cases || 0).toLocaleString()}
                   </TableCell>
                   <TableCell className="text-right font-mono">
-                    {row.cumulative_cases.toLocaleString()}
+                    {(row.cumulative_cases || 0).toLocaleString()}
                   </TableCell>
                   <TableCell className="text-right font-mono">
-                    {row.new_deaths.toLocaleString()}
+                    {(row.new_deaths || 0).toLocaleString()}
                   </TableCell>
                   <TableCell className="text-right font-mono">
-                    {row.cumulative_deaths.toLocaleString()}
+                    {(row.cumulative_deaths || 0).toLocaleString()}
                   </TableCell>
                 </TableRow>
               ))}
