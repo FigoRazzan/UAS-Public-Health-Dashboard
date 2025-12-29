@@ -13,6 +13,7 @@ import Index from "./pages/Index";
 import DataExplorer from "./pages/DataExplorer";
 import SumberData from "./pages/SumberData";
 import Pengaturan from "./pages/Pengaturan";
+import AuditLogs from "./pages/AuditLogs";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -50,6 +51,11 @@ const App = () => (
               <Route path="/dashboard/pengaturan" element={
                 <ProtectedRoute>
                   <Pengaturan />
+                </ProtectedRoute>
+              } />
+              <Route path="/admin/audit-logs" element={
+                <ProtectedRoute>
+                  <AuditLogs />
                 </ProtectedRoute>
               } />
 

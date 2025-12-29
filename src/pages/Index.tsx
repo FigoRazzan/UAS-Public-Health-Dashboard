@@ -10,9 +10,13 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Activity, Users, Heart, TrendingUp } from "lucide-react";
 import { useCovidDataSupabase as useCovidData } from "@/hooks/useCovidDataSupabase";
 import { FilterProvider, useFilters } from "@/contexts/FilterContext";
+import { useAuth } from "@/contexts/AuthContext";
+import { AdminPanel } from "@/components/AdminPanel";
+import { DashboardFooter } from "@/components/DashboardFooter";
 
 const DashboardContent = () => {
   const { filters } = useFilters();
+  const { isAdmin } = useAuth();
   const { loading, error, stats, getTrendData, getRegionData, getAgeData, getTableData } = useCovidData(filters);
 
   const trendData = getTrendData(filters.chartTimeRange);
@@ -197,6 +201,13 @@ const DashboardContent = () => {
             </div>
 
             <FilterBar />
+
+            {/* Admin Panel - Only visible to admins */}
+            {isAdmin && (
+              <div className="animate-in slide-in-from-top-4 duration-500">
+                <AdminPanel />
+              </div>
+            )}
 
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-100">
               <KPICard

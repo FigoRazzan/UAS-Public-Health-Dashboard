@@ -1,4 +1,4 @@
-import { Bell, User, Moon, Sun, Menu, LogOut } from "lucide-react";
+import { Bell, User, Moon, Sun, Menu, LogOut, FileText, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -13,11 +13,16 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { supabase } from "@/lib/supabase";
+import { format } from "date-fns";
+import { id } from "date-fns/locale";
 
 export function DashboardHeader() {
   const { theme, toggleTheme } = useTheme();
-  const { user, logout } = useAuth();
+  const { user, isAdmin, logout } = useAuth();
   const navigate = useNavigate();
+  const [lastUpdated, setLastUpdated] = useState<string | null>(null);
 
   const currentDate = new Date().toLocaleDateString("id-ID", {
     weekday: "long",
@@ -25,6 +30,21 @@ export function DashboardHeader() {
     month: "long",
     day: "numeric",
   });
+
+  useEffect(() => {
+    fetchLastUpdated();
+  }, []);
+
+  const fetchLastUpdated = async () => {
+    try {
+      const { data, error } = await supabase.rpc('get_last_data_update');
+      if (data && !error) {
+        setLastUpdated(data as string);
+      }
+    } catch (error) {
+      console.error('Error fetching last updated:', error);
+    }
+  };
 
   const handleLogout = () => {
     logout();
@@ -48,17 +68,29 @@ export function DashboardHeader() {
             <Menu className="h-5 w-5" />
           </SidebarTrigger>
           <div className="flex flex-col">
-            <h1 className="text-xl font-bold text-foreground">
-              Dashboard Pemantauan Wabah
-            </h1>
+            <div className="flex items-center gap-2">
+              <h1 className="text-xl font-bold text-foreground">
+                Dashboard Pemantauan Wabah
+              </h1>
+              {isAdmin && (
+                <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-primary/10 text-primary border border-primary/20">
+                  Admin
+                </span>
+              )}
+            </div>
             <p className="text-xs text-muted-foreground hidden sm:block">COVID-19 / Dengue Monitoring System</p>
           </div>
         </div>
 
         <div className="flex items-center gap-4">
           <div className="hidden md:flex items-center gap-2 text-sm text-muted-foreground">
-            <span className="font-medium">Last Updated:</span>
-            <span>{currentDate}</span>
+            <Calendar className="h-4 w-4" />
+            <span className="font-medium">Data Terakhir Diperbarui:</span>
+            <span>
+              {lastUpdated
+                ? format(new Date(lastUpdated), "dd MMMM yyyy, HH:mm 'WIB'", { locale: id })
+                : 'Memuat...'}
+            </span>
           </div>
 
           <Button
@@ -124,6 +156,12 @@ export function DashboardHeader() {
               <DropdownMenuItem onClick={() => navigate('/dashboard/pengaturan')}>
                 Pengaturan
               </DropdownMenuItem>
+              {isAdmin && (
+                <DropdownMenuItem onClick={() => navigate('/admin/audit-logs')}>
+                  <FileText className="h-4 w-4 mr-2" />
+                  Audit Logs
+                </DropdownMenuItem>
+              )}
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive">
                 <LogOut className="h-4 w-4 mr-2" />

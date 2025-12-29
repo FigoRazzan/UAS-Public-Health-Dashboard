@@ -3,7 +3,7 @@ import { DashboardHeader } from "@/components/DashboardHeader";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Database, ExternalLink, FileText, Globe, Calendar, Download, CheckCircle2, Info } from "lucide-react";
+import { Database, ExternalLink, FileText, Globe, Calendar, CheckCircle2, Info, Shield, Upload } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 
@@ -20,7 +20,7 @@ export default function SumberData() {
               <div>
                 <h1 className="text-3xl font-bold text-foreground">Sumber Data</h1>
                 <p className="text-muted-foreground mt-1">
-                  Informasi lengkap tentang dataset dan sumber data yang digunakan
+                  Informasi lengkap tentang dataset dan infrastruktur backend
                 </p>
               </div>
 
@@ -53,16 +53,16 @@ export default function SumberData() {
                         <FileText className="h-4 w-4" />
                         <span className="text-sm">Total Data Points</span>
                       </div>
-                      <p className="text-2xl font-bold">502,802</p>
-                      <p className="text-xs text-muted-foreground mt-1">rows dalam dataset</p>
+                      <p className="text-2xl font-bold">500,000+</p>
+                      <p className="text-xs text-muted-foreground mt-1">rows di Supabase</p>
                     </div>
                     <div className="bg-muted/50 rounded-lg p-4">
                       <div className="flex items-center gap-2 text-muted-foreground mb-1">
                         <Database className="h-4 w-4" />
-                        <span className="text-sm">Ukuran File</span>
+                        <span className="text-sm">Backend</span>
                       </div>
-                      <p className="text-2xl font-bold">21.84 MB</p>
-                      <p className="text-xs text-muted-foreground mt-1">file CSV</p>
+                      <p className="text-2xl font-bold">Supabase</p>
+                      <p className="text-xs text-muted-foreground mt-1">PostgreSQL database</p>
                     </div>
                     <div className="bg-muted/50 rounded-lg p-4">
                       <div className="flex items-center gap-2 text-muted-foreground mb-1">
@@ -78,7 +78,7 @@ export default function SumberData() {
                         <span className="text-sm">Periode Data</span>
                       </div>
                       <p className="text-2xl font-bold">2020-2025</p>
-                      <p className="text-xs text-muted-foreground mt-1">5 tahun data</p>
+                      <p className="text-xs text-muted-foreground mt-1">5+ tahun data</p>
                     </div>
                   </div>
 
@@ -92,14 +92,14 @@ export default function SumberData() {
                     </h3>
                     <div className="space-y-3 text-sm text-muted-foreground">
                       <p>
-                        Dataset ini merupakan data global COVID-19 yang dipublikasikan secara resmi oleh 
-                        <span className="font-semibold text-foreground"> World Health Organization (WHO)</span>. 
+                        Dataset ini merupakan data global COVID-19 yang dipublikasikan secara resmi oleh
+                        <span className="font-semibold text-foreground"> World Health Organization (WHO)</span>.
                         Data dikumpulkan dan diverifikasi dari laporan resmi negara-negara anggota WHO di seluruh dunia.
                       </p>
                       <p>
-                        Dataset mencakup informasi harian tentang kasus konfirmasi, kematian, dan berbagai indikator 
-                        kesehatan masyarakat lainnya. Data dikelompokkan berdasarkan negara dan wilayah WHO 
-                        (Afrika, Amerika, Mediterania Timur, Eropa, Asia Tenggara, dan Pasifik Barat).
+                        Data disimpan di <span className="font-semibold text-foreground">Supabase PostgreSQL database</span> dengan
+                        Row Level Security (RLS) untuk keamanan data. Dashboard mengambil data real-time dari database
+                        dengan query optimization dan caching untuk performa maksimal.
                       </p>
                     </div>
                   </div>
@@ -108,15 +108,15 @@ export default function SumberData() {
 
                   {/* Data Structure */}
                   <div>
-                    <h3 className="text-lg font-semibold mb-3">Struktur Data</h3>
+                    <h3 className="text-lg font-semibold mb-3">Struktur Data (Tabel: covid_global_reports)</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                       <div className="flex items-start gap-3 p-3 bg-muted/30 rounded-lg">
                         <div className="p-2 rounded bg-primary/10 text-primary">
                           <CheckCircle2 className="h-4 w-4" />
                         </div>
                         <div>
-                          <p className="font-medium text-sm">Date_reported</p>
-                          <p className="text-xs text-muted-foreground">Tanggal laporan (YYYY-MM-DD)</p>
+                          <p className="font-medium text-sm">date_reported</p>
+                          <p className="text-xs text-muted-foreground">Tanggal laporan (DATE)</p>
                         </div>
                       </div>
                       <div className="flex items-start gap-3 p-3 bg-muted/30 rounded-lg">
@@ -124,8 +124,8 @@ export default function SumberData() {
                           <CheckCircle2 className="h-4 w-4" />
                         </div>
                         <div>
-                          <p className="font-medium text-sm">Country_code</p>
-                          <p className="text-xs text-muted-foreground">Kode ISO negara (2 huruf)</p>
+                          <p className="font-medium text-sm">country_code</p>
+                          <p className="text-xs text-muted-foreground">Kode ISO negara (TEXT)</p>
                         </div>
                       </div>
                       <div className="flex items-start gap-3 p-3 bg-muted/30 rounded-lg">
@@ -133,8 +133,8 @@ export default function SumberData() {
                           <CheckCircle2 className="h-4 w-4" />
                         </div>
                         <div>
-                          <p className="font-medium text-sm">Country</p>
-                          <p className="text-xs text-muted-foreground">Nama lengkap negara</p>
+                          <p className="font-medium text-sm">country</p>
+                          <p className="text-xs text-muted-foreground">Nama lengkap negara (TEXT)</p>
                         </div>
                       </div>
                       <div className="flex items-start gap-3 p-3 bg-muted/30 rounded-lg">
@@ -142,8 +142,8 @@ export default function SumberData() {
                           <CheckCircle2 className="h-4 w-4" />
                         </div>
                         <div>
-                          <p className="font-medium text-sm">WHO_region</p>
-                          <p className="text-xs text-muted-foreground">Wilayah WHO (AFR, AMR, EMR, EUR, SEAR, WPR)</p>
+                          <p className="font-medium text-sm">who_region</p>
+                          <p className="text-xs text-muted-foreground">Wilayah WHO (TEXT)</p>
                         </div>
                       </div>
                       <div className="flex items-start gap-3 p-3 bg-muted/30 rounded-lg">
@@ -151,8 +151,8 @@ export default function SumberData() {
                           <CheckCircle2 className="h-4 w-4" />
                         </div>
                         <div>
-                          <p className="font-medium text-sm">New_cases</p>
-                          <p className="text-xs text-muted-foreground">Jumlah kasus baru per hari</p>
+                          <p className="font-medium text-sm">new_cases</p>
+                          <p className="text-xs text-muted-foreground">Kasus baru harian (INTEGER)</p>
                         </div>
                       </div>
                       <div className="flex items-start gap-3 p-3 bg-muted/30 rounded-lg">
@@ -160,8 +160,8 @@ export default function SumberData() {
                           <CheckCircle2 className="h-4 w-4" />
                         </div>
                         <div>
-                          <p className="font-medium text-sm">Cumulative_cases</p>
-                          <p className="text-xs text-muted-foreground">Total kasus kumulatif</p>
+                          <p className="font-medium text-sm">cumulative_cases</p>
+                          <p className="text-xs text-muted-foreground">Total kumulatif (BIGINT)</p>
                         </div>
                       </div>
                       <div className="flex items-start gap-3 p-3 bg-muted/30 rounded-lg">
@@ -169,8 +169,8 @@ export default function SumberData() {
                           <CheckCircle2 className="h-4 w-4" />
                         </div>
                         <div>
-                          <p className="font-medium text-sm">New_deaths</p>
-                          <p className="text-xs text-muted-foreground">Jumlah kematian baru per hari</p>
+                          <p className="font-medium text-sm">new_deaths</p>
+                          <p className="text-xs text-muted-foreground">Kematian baru harian (INTEGER)</p>
                         </div>
                       </div>
                       <div className="flex items-start gap-3 p-3 bg-muted/30 rounded-lg">
@@ -178,61 +178,8 @@ export default function SumberData() {
                           <CheckCircle2 className="h-4 w-4" />
                         </div>
                         <div>
-                          <p className="font-medium text-sm">Cumulative_deaths</p>
-                          <p className="text-xs text-muted-foreground">Total kematian kumulatif</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <Separator />
-
-                  {/* Data Processing */}
-                  <div>
-                    <h3 className="text-lg font-semibold mb-3">Pemrosesan Data</h3>
-                    <div className="space-y-3">
-                      <div className="flex items-start gap-3">
-                        <div className="p-2 rounded-full bg-success/10 text-success mt-0.5">
-                          <CheckCircle2 className="h-4 w-4" />
-                        </div>
-                        <div>
-                          <p className="font-medium text-sm">Caching dengan IndexedDB</p>
-                          <p className="text-xs text-muted-foreground">
-                            Data disimpan di browser untuk akses cepat (cache 24 jam)
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-start gap-3">
-                        <div className="p-2 rounded-full bg-success/10 text-success mt-0.5">
-                          <CheckCircle2 className="h-4 w-4" />
-                        </div>
-                        <div>
-                          <p className="font-medium text-sm">Pre-aggregation & Indexing</p>
-                          <p className="text-xs text-muted-foreground">
-                            Data diindeks berdasarkan tanggal dan wilayah untuk filtering yang efisien
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-start gap-3">
-                        <div className="p-2 rounded-full bg-success/10 text-success mt-0.5">
-                          <CheckCircle2 className="h-4 w-4" />
-                        </div>
-                        <div>
-                          <p className="font-medium text-sm">Optimized Filtering</p>
-                          <p className="text-xs text-muted-foreground">
-                            Filtering dengan O(1) lookup untuk performa maksimal
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-start gap-3">
-                        <div className="p-2 rounded-full bg-success/10 text-success mt-0.5">
-                          <CheckCircle2 className="h-4 w-4" />
-                        </div>
-                        <div>
-                          <p className="font-medium text-sm">Memoized Calculations</p>
-                          <p className="text-xs text-muted-foreground">
-                            Statistik dan agregasi di-cache untuk menghindari recalculation
-                          </p>
+                          <p className="font-medium text-sm">cumulative_deaths</p>
+                          <p className="text-xs text-muted-foreground">Total kematian (BIGINT)</p>
                         </div>
                       </div>
                     </div>
@@ -248,71 +195,119 @@ export default function SumberData() {
                         Kunjungi WHO COVID-19 Dashboard
                       </a>
                     </Button>
-                    <Button variant="outline" className="gap-2" asChild>
-                      <a href="https://covid19.who.int/WHO-COVID-19-global-data.csv" target="_blank" rel="noopener noreferrer">
-                        <Download className="h-4 w-4" />
-                        Download Dataset Original
-                      </a>
-                    </Button>
                   </div>
                 </CardContent>
               </Card>
 
-              {/* Technical Specifications */}
+              {/* Technical Infrastructure */}
               <Card className="animate-in fade-in slide-in-from-bottom-4 duration-500 delay-200">
                 <CardHeader>
-                  <CardTitle>Spesifikasi Teknis</CardTitle>
-                  <CardDescription>Detail implementasi dan teknologi yang digunakan</CardDescription>
+                  <CardTitle>Infrastruktur Backend</CardTitle>
+                  <CardDescription>Teknologi dan arsitektur sistem</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <h4 className="font-semibold mb-3">Format & Parsing</h4>
+                      <h4 className="font-semibold mb-3 flex items-center gap-2">
+                        <Database className="h-4 w-4 text-primary" />
+                        Database & Storage
+                      </h4>
                       <div className="space-y-2 text-sm">
                         <div className="flex justify-between">
-                          <span className="text-muted-foreground">Format File</span>
-                          <span className="font-medium">CSV (Comma-separated values)</span>
+                          <span className="text-muted-foreground">Platform</span>
+                          <span className="font-medium">Supabase</span>
                         </div>
                         <Separator />
                         <div className="flex justify-between">
-                          <span className="text-muted-foreground">Encoding</span>
-                          <span className="font-medium">UTF-8</span>
+                          <span className="text-muted-foreground">Database</span>
+                          <span className="font-medium">PostgreSQL 15</span>
                         </div>
                         <Separator />
                         <div className="flex justify-between">
-                          <span className="text-muted-foreground">Parser</span>
-                          <span className="font-medium">PapaParse 5.4.1</span>
+                          <span className="text-muted-foreground">Query Limit</span>
+                          <span className="font-medium">200,000 rows/query</span>
                         </div>
                         <Separator />
                         <div className="flex justify-between">
-                          <span className="text-muted-foreground">Total Kolom</span>
-                          <span className="font-medium">8 columns</span>
+                          <span className="text-muted-foreground">Response Time</span>
+                          <span className="font-medium">~1-2 seconds</span>
                         </div>
                       </div>
                     </div>
 
                     <div>
-                      <h4 className="font-semibold mb-3">Storage & Performance</h4>
+                      <h4 className="font-semibold mb-3 flex items-center gap-2">
+                        <Shield className="h-4 w-4 text-primary" />
+                        Security & Access Control
+                      </h4>
                       <div className="space-y-2 text-sm">
                         <div className="flex justify-between">
-                          <span className="text-muted-foreground">Browser Storage</span>
-                          <span className="font-medium">IndexedDB</span>
+                          <span className="text-muted-foreground">Authentication</span>
+                          <span className="font-medium">Supabase Auth</span>
                         </div>
                         <Separator />
                         <div className="flex justify-between">
-                          <span className="text-muted-foreground">Cache Duration</span>
-                          <span className="font-medium">24 hours</span>
+                          <span className="text-muted-foreground">Row Level Security</span>
+                          <span className="font-medium">Enabled</span>
                         </div>
                         <Separator />
                         <div className="flex justify-between">
-                          <span className="text-muted-foreground">Initial Load Time</span>
-                          <span className="font-medium">~2-3 seconds</span>
+                          <span className="text-muted-foreground">Role-Based Access</span>
+                          <span className="font-medium">Admin & Public</span>
                         </div>
                         <Separator />
                         <div className="flex justify-between">
-                          <span className="text-muted-foreground">Cached Load Time</span>
-                          <span className="font-medium">&lt; 1 second</span>
+                          <span className="text-muted-foreground">Audit Logging</span>
+                          <span className="font-medium">Active</span>
                         </div>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Admin Features */}
+              <Card className="border-primary/30 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-300">
+                <CardHeader>
+                  <div className="flex items-center gap-2">
+                    <Upload className="h-5 w-5 text-primary" />
+                    <CardTitle>Fitur Admin</CardTitle>
+                  </div>
+                  <CardDescription>Kemampuan khusus untuk administrator</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    <div className="flex items-start gap-3">
+                      <div className="p-2 rounded-full bg-primary/10 text-primary mt-0.5">
+                        <CheckCircle2 className="h-4 w-4" />
+                      </div>
+                      <div>
+                        <p className="font-medium text-sm">CSV Data Upload</p>
+                        <p className="text-xs text-muted-foreground">
+                          Admin dapat mengupload data COVID-19 baru melalui file CSV dengan validasi otomatis
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <div className="p-2 rounded-full bg-primary/10 text-primary mt-0.5">
+                        <CheckCircle2 className="h-4 w-4" />
+                      </div>
+                      <div>
+                        <p className="font-medium text-sm">Audit Logs</p>
+                        <p className="text-xs text-muted-foreground">
+                          Semua aktivitas admin tercatat dengan timestamp, user, dan detail lengkap
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <div className="p-2 rounded-full bg-primary/10 text-primary mt-0.5">
+                        <CheckCircle2 className="h-4 w-4" />
+                      </div>
+                      <div>
+                        <p className="font-medium text-sm">Batch Processing</p>
+                        <p className="text-xs text-muted-foreground">
+                          Upload data dalam batch 1000 rows untuk performa optimal
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -320,7 +315,7 @@ export default function SumberData() {
               </Card>
 
               {/* Data Quality */}
-              <Card className="animate-in fade-in slide-in-from-bottom-4 duration-500 delay-300">
+              <Card className="animate-in fade-in slide-in-from-bottom-4 duration-500 delay-[400ms]">
                 <CardHeader>
                   <CardTitle>Kualitas & Validasi Data</CardTitle>
                 </CardHeader>
@@ -338,10 +333,10 @@ export default function SumberData() {
                     <div className="bg-success/10 border border-success/20 rounded-lg p-4">
                       <div className="flex items-center gap-2 mb-2">
                         <CheckCircle2 className="h-5 w-5 text-success" />
-                        <span className="font-semibold">Daily Updates</span>
+                        <span className="font-semibold">Real-time Access</span>
                       </div>
                       <p className="text-sm text-muted-foreground">
-                        Dataset diperbarui setiap hari dengan data terbaru
+                        Data diambil langsung dari database tanpa delay
                       </p>
                     </div>
                     <div className="bg-success/10 border border-success/20 rounded-lg p-4">
@@ -358,12 +353,13 @@ export default function SumberData() {
               </Card>
 
               {/* Footer Note */}
-              <div className="text-center text-sm text-muted-foreground py-4 animate-in fade-in duration-500 delay-[400ms]">
+              <div className="text-center text-sm text-muted-foreground py-4 animate-in fade-in duration-500 delay-[500ms]">
                 <p>
-                  Data terakhir diperbarui: <span className="font-semibold">{new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' })}</span>
+                  Dashboard ini menggunakan <span className="font-semibold">Supabase</span> sebagai backend
+                  dengan <span className="font-semibold">Row Level Security</span> untuk keamanan data
                 </p>
                 <p className="mt-1">
-                  Dashboard ini menggunakan data terbuka dari WHO untuk tujuan edukasi dan analisis
+                  Data WHO untuk tujuan edukasi dan analisis kesehatan masyarakat
                 </p>
               </div>
             </div>

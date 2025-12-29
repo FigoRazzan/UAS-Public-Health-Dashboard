@@ -89,8 +89,9 @@ const Login = () => {
             <div className="w-full max-w-4xl overflow-hidden rounded-3xl shadow-2xl bg-card flex flex-col md:flex-row">
                 {/* Left Side - Gradient (slides in) */}
                 <motion.div
-                    initial={{ x: '-100%' }}
+                    initial={{ x: '100%' }}
                     animate={{ x: 0 }}
+                    exit={{ x: '100%' }}
                     transition={{ duration: 0.6, ease: 'easeOut' }}
                     className={`w-full md:w-1/2 ${gradientClass} p-12 flex flex-col justify-center items-center text-white relative overflow-hidden`}
                 >
@@ -143,8 +144,14 @@ const Login = () => {
                     </motion.div>
                 </motion.div>
 
-                {/* Right Side - Form */}
-                <div className="w-full md:w-1/2 p-12 bg-card">
+                {/* Right Side - Form (swaps to LEFT on exit) */}
+                <motion.div
+                    initial={{ x: '-100%' }}
+                    animate={{ x: 0 }}
+                    exit={{ x: '-100%' }}
+                    transition={{ duration: 0.7, ease: [0.43, 0.13, 0.23, 0.96] }}
+                    className="w-full md:w-1/2 p-12 bg-card"
+                >
                     <div className="max-w-sm mx-auto">
                         {/* Logo */}
                         <Link to="/" className="inline-flex items-center gap-2 text-xl font-bold mb-8">
@@ -235,7 +242,7 @@ const Login = () => {
                             </div>
                         </form>
                     </div>
-                </div>
+                </motion.div>
             </div>
         </div>
     );

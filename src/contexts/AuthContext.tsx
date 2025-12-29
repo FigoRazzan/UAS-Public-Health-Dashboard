@@ -14,7 +14,10 @@ interface User {
 
 interface AuthContextType {
     user: User | null;
+    profile: Profile | null;
     isLoading: boolean;
+    isAdmin: boolean;
+    isPublic: boolean;
     login: (email: string, password: string, rememberMe?: boolean) => Promise<void>;
     register: (name: string, username: string, email: string, password: string) => Promise<void>;
     logout: () => Promise<void>;
@@ -36,7 +39,12 @@ interface AuthProviderProps {
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
     const [user, setUser] = useState<User | null>(null);
+    const [profile, setProfile] = useState<Profile | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+
+    // Helper computed values
+    const isAdmin = user?.role === 'admin';
+    const isPublic = user?.role === 'public';
 
     // Check session on mount
     useEffect(() => {
@@ -80,6 +88,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             if (error) throw error;
 
             if (profile) {
+                setProfile(profile);
                 setUser({
                     id: supabaseUser.id,
                     email: supabaseUser.email || '',
@@ -197,7 +206,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
     const value = {
         user,
+        profile,
         isLoading,
+        isAdmin,
+        isPublic,
         login,
         register,
         logout,

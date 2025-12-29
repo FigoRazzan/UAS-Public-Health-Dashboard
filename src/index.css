@@ -145,4 +145,21 @@ All colors MUST be HSL.
   body {
     @apply bg-background text-foreground;
   }
+
+  /* Fix browser autocomplete white background */
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px hsl(var(--muted) / 0.5) inset !important;
+    -webkit-text-fill-color: hsl(var(--foreground)) !important;
+    transition: background-color 5000s ease-in-out 0s;
+  }
+
+  /* Firefox autocomplete fix */
+  input:-moz-autofill,
+  input:-moz-autofill-preview {
+    background-color: hsl(var(--muted) / 0.5) !important;
+    color: hsl(var(--foreground)) !important;
+  }
 }
