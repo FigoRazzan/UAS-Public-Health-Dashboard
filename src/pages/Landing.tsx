@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button';
 import { FeatureCard } from '@/components/FeatureCard';
 import { TeamMemberCard } from '@/components/TeamMemberCard';
 import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import {
     Activity,
     BarChart3,
@@ -55,27 +56,32 @@ const Landing = () => {
         {
             nrp: '15-2022-044',
             name: 'Dimas Bratakusumah',
-            role: 'Project Lead / Health Informatics Analyst'
+            role: 'Project Lead / Health Informatics Analyst',
+            image: '/Foto/foto_dimas.jpeg'
         },
         {
             nrp: '15-2022-064',
             name: 'Muhammad Figo Razzan Fadillah',
-            role: 'Application Developer / Data Engineer'
+            role: 'Application Developer / Data Engineer',
+            image: '/Foto/foto_figo.png'
         },
         {
             nrp: '15-2022-150',
             name: 'Dian Raisa Gumilar',
-            role: 'Data Analyst / Visualization Specialist'
+            role: 'Data Analyst / Visualization Specialist',
+            image: '/Foto/foto_dian.jpeg'
         },
         {
             nrp: '15-2022-217',
             name: 'Mochamad Ramdhan',
-            role: 'System Architect / Developer'
+            role: 'System Architect / Developer',
+            image: '/Foto/foto_ramdan.jpeg'
         },
         {
             nrp: '15-2022-250',
             name: 'R Jayani Maulana S',
-            role: 'Public Health Data Specialist'
+            role: 'Public Health Data Specialist',
+            image: '/Foto/foto_Jayani.jpeg'
         }
     ];
 
@@ -112,7 +118,7 @@ const Landing = () => {
             </header>
 
             {/* Hero Section */}
-            <section className="py-20 px-4 bg-gradient-to-b from-primary/5 to-background">
+            <section className="py-20 px-4 bg-gradient-to-b from-primary/5 to-background relative z-10">
                 <div className="container mx-auto text-center max-w-4xl">
                     <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
                         <Activity className="w-4 h-4" />
@@ -161,22 +167,30 @@ const Landing = () => {
             {/* Features Section */}
             <section className="py-20 px-4">
                 <div className="container mx-auto max-w-6xl">
-                    <div className="text-center mb-12">
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true, margin: "-100px" }}
+                        transition={{ duration: 0.6 }}
+                        className="text-center mb-12"
+                    >
                         <h2 className="text-3xl md:text-4xl font-bold mb-4">Fitur Unggulan</h2>
                         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
                             Dashboard komprehensif dengan berbagai fitur untuk monitoring dan analisis data kesehatan masyarakat
                         </p>
-                    </div>
+                    </motion.div>
 
                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {features.map((feature, index) => (
-                            <div
+                            <motion.div
                                 key={index}
-                                className="animate-in fade-in slide-in-from-bottom-4 duration-500"
-                                style={{ animationDelay: `${index * 100}ms` }}
+                                initial={{ opacity: 0, y: 30 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true, margin: "-50px" }}
+                                transition={{ duration: 0.5, delay: index * 0.1 }}
                             >
                                 <FeatureCard {...feature} />
-                            </div>
+                            </motion.div>
                         ))}
                     </div>
                 </div>
@@ -185,22 +199,30 @@ const Landing = () => {
             {/* Team Section */}
             <section className="py-20 px-4 bg-muted/30">
                 <div className="container mx-auto max-w-6xl">
-                    <div className="text-center mb-12">
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true, margin: "-100px" }}
+                        transition={{ duration: 0.6 }}
+                        className="text-center mb-12"
+                    >
                         <h2 className="text-3xl md:text-4xl font-bold mb-4">Tim Pengembang</h2>
                         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
                             Mahasiswa Informatika ITENAS - Mata Kuliah FB-499 INFORMATIKA TERAPAN BB
                         </p>
-                    </div>
+                    </motion.div>
 
                     <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
                         {teamMembers.map((member, index) => (
-                            <div
+                            <motion.div
                                 key={member.nrp}
-                                className="animate-in fade-in slide-in-from-bottom-4 duration-500"
-                                style={{ animationDelay: `${index * 100}ms` }}
+                                initial={{ opacity: 0, y: 30 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true, margin: "-50px" }}
+                                transition={{ duration: 0.5, delay: index * 0.1 }}
                             >
                                 <TeamMemberCard {...member} />
-                            </div>
+                            </motion.div>
                         ))}
                     </div>
 
@@ -217,7 +239,13 @@ const Landing = () => {
             {/* CTA Section */}
             <section className="py-20 px-4">
                 <div className="container mx-auto max-w-4xl text-center">
-                    <div className="bg-gradient-to-r from-primary to-primary-light rounded-2xl p-12 text-primary-foreground">
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        viewport={{ once: true, margin: "-100px" }}
+                        transition={{ duration: 0.6 }}
+                        className="bg-gradient-to-r from-primary to-primary-light rounded-2xl p-12 text-primary-foreground"
+                    >
                         <h2 className="text-3xl md:text-4xl font-bold mb-4">
                             Siap Memulai Monitoring Data COVID-19?
                         </h2>
@@ -242,7 +270,7 @@ const Landing = () => {
                                 Sudah Punya Akun?
                             </Button>
                         </div>
-                    </div>
+                    </motion.div>
                 </div>
             </section>
 
